@@ -1,5 +1,5 @@
 ---
-title: "Barbell exercise"
+title: "Barbell exercise predictions"
 output: html_document
 ---
 The goal of this project is to predict the way in which a weight lifting exercise was done, based on data recorded from sensors strapped to different parts of the body of the person doing the exercise. The way the exercise was done is classified into five classes: one for the correct way, and four more for the common mistakes that are made during the exercise. These have been coded as A through E in the "classe" variable of a data set. We will try to bulid a model that can predict the "classe" variable from the data given to us.
