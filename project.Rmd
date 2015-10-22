@@ -1,0 +1,58 @@
+---
+title: "Barbell exercise"
+output: html_document
+---
+The goal of this project is to predict the way in which a weight lifting exercise was done, based on data recorded from sensors strapped to different parts of the body of the person doing the exercise. The way the exercise was done is classified into five classes: one for the correct way, and four more for the common mistakes that are made during the exercise. These have been coded as A through E in the "classe" variable of a data set. We will try to bulid a model that can predict the "classe" variable from the data given to us.
+
+We first read the data from the training file.
+```{r}
+training=read.csv(file="training.csv")
+```
+At this point we want to create a test set out of the training set to test our model, before we use the test set given separtely to validate the model.
+
+```{r}
+library(caret)
+set.seed(33235)
+intrain=createDataPartition(training$classe,p=0.75,list=FALSE)
+trainsub=training[intrain,]
+testsub=training[-intrain,]
+```
+On studying the various variables , it seemed that the agrregate variable, should not be used for prediction, especially since the test data set did not have any of this data, and only had the instantaneous measurements. So we identified all the aggregate data, and proceeded to remove them from the data frame.
+
+```{r}
+max=grep("max",colnames(training), value = FALSE)
+min=grep("min",colnames(training), value = FALSE)
+std=grep("std",colnames(training), value = FALSE)
+kurt=grep("kurto",colnames(training), value = FALSE)
+skew=grep("skew",colnames(training), value = FALSE)
+avg=grep("avg",colnames(training), value = FALSE)
+amp=grep("ampl",colnames(training), value = FALSE)
+var=grep("var_",colnames(training), value = FALSE)
+delcol=c(max,min,var,avg,kurt,amp,std,skew)
+trainsub2=trainsub[,-delcol]
+```
+Finally the first three seven columns seem to correspond to serial number, time etc., which are not varaibles that one would expect to be relevant to the prediction model. So we removed these varaibles as well.
+
+```{r}
+trainsub3=trainsub2[,8:60]
+```
+Finally we are ready to fit a model using the "random forest" method.
+
+```{r, cache =TRUE}
+fit=train(classe~.,data =trainsub3,method="rf")
+```
+The above command took over an hour to run on my computer. Finally I got a model. 
+
+The bootstrapping resampling method of cross validation used by caret indicates that the expected out of sample error rate is about 1.1%.
+I then tested it on the test subset that I had created earlier from the original training set. First I went through the same preprocessing with this data frame, by removing all the aggregate variables, and serial numbers etc.
+
+```{r}
+fit
+testsub2=testsub[,-delcol]
+testsub3=testsub2[,8:60]
+pred=predict(fit,testsub3)
+table(pred,testsub3$classe)
+```
+The error rate in the test set was 0.62%, even smaller than the expected rate. When I tried this model on the test data provided for validation, the results were 100% correct on the sample of 20.  
+
+
