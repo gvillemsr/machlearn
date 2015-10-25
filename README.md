@@ -1,2 +1,2 @@
 # machlearn
-The repo can be read at the link of your gh-pages
+The Project report can be read at http://gvillemsr.github.io/machlearn/project.html and it should open as an html file. Thanks.
